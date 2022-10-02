@@ -9,7 +9,6 @@
 #include <MinHook.h>
 #include <gd.h>
 #include <cocos2d.h>
-#include "registers/Hook.hpp"
 
 using std::uintptr_t;
 using namespace gd;
@@ -19,5 +18,8 @@ using hook_t = std::tuple<uintptr_t, LPVOID, LPVOID*>;
 namespace Mod {
     extern std::vector<hook_t> hooks;
 }
+
+#include "registers/Hook.hpp"
+#include "registers/StaticIncludes.hpp"
 
 #pragma warning( pop )
