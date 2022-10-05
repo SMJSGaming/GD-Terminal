@@ -2,16 +2,36 @@
 
 #include "../includes.hpp"
 #include "../bindings/MenuLayerExtended.hpp"
+#include "../utils/BetterTextArea.hpp"
+#include "../configs/StaticConfig.hpp"
 
 DEFINE_HOOK(bool, MenuLayer, init) {
-    std::cout << "Hello, world!" << std::endl;
-    CCSize winSize = CCDirector::sharedDirector()->getWinSize();
-    CCMenu* menu = CCMenu::create();
-    CCSprite* sprite = CCSprite::createWithSpriteFrameName("GJ_playBtn_001.png");
+    GameSoundManager::sharedState()->stopBackgroundMusic();
+    GJAccountManager* account = GJAccountManager::sharedState();
+    CCDirector* director = CCDirector::sharedDirector();
+    CCSize winSize = director->getWinSize();
+    CCSize marginedSize = winSize - CCSize(5, 5);
+    BetterTextArea<false>* history = BetterTextArea<false>::create(FONT, START_TEXT, CHAR_SCALE, marginedSize.width);
+    CCSize historySize = history->getSize();
+    CCLabelBMFont* arrow = CCLabelBMFont::create((account->m_sUsername + ">").c_str(), FONT);
+    CCTextInputNode* input = CCTextInputNode::create("", self, FONT, marginedSize.width, 10);
 
-    menu->addChild(CCMenuItemSpriteExtra::create(sprite, self, menu_selector(MenuLayerExtended::onPlay)));
-    menu->setPosition({ winSize.width / 2, winSize.height / 2 });
-    self->addChild(menu);
+    history->setLinePadding(1);
+    arrow->setScale(CHAR_SCALE);
+    input->setMaxLabelScale(CHAR_SCALE);
+    input->setAllowedChars(" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_\"'`<>()[]{}!?\\/.,:;+-*=");
+
+    history->setPosition({ 5, marginedSize.height });
+    arrow->setPosition({ 5, marginedSize.height - historySize.height });
+    input->setPosition({ 5.25f * (account->m_sUsername.length() + 2.0f), marginedSize.height - historySize.height });
+    
+    arrow->setAnchorPoint({ 0, 0.5f });
+    input->m_pPlaceholderLabel->setAnchorPoint({ 0, 0.6f });
+    input->m_pTextField->setAnchorPoint({ 0, 0.6f });
+
+    self->addChild(history);
+    //self->addChild(arrow);
+    //self->addChild(input);
 
     return true;
 }
