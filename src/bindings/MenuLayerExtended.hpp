@@ -1,11 +1,15 @@
 #pragma once
+#pragma warning( push )
+#pragma warning( disable : 4251 )
 
-#include "../includes.hpp"
+#include <gd.h>
+#include <cocos2d.h>
+
+using namespace gd;
+using namespace cocos2d;
 
 namespace gd {
     struct MenuLayerExtended : public MenuLayer {
-        void onPlay(CCObject* sender) {
-            reinterpret_cast<void(__thiscall*)(MenuLayer*, CCObject*)>(gd::base + 0x191B50)(this, sender);
-        }
+        void onPlay(CCObject* sender);
     };
 }
