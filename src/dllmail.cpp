@@ -5,8 +5,6 @@ std::vector<hook_t> Mod::hooks {};
 DWORD WINAPI thread_func(void* hModule) {
     MH_Initialize();
 
-    std::cout << Mod::hooks.size() << std::endl;
-
     for (const hook_t& hook : Mod::hooks) {
         MH_CreateHook(
             reinterpret_cast<LPVOID>(gd::base + std::get<0>(hook)), 
