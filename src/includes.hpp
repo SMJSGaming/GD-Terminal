@@ -1,6 +1,4 @@
 #pragma once
-
-// As the wise man Dani once said. Shut.
 #pragma warning( push )
 #pragma warning( disable : 4251 )
 
@@ -10,8 +8,6 @@
 #include <gd.h>
 #include <cocos2d.h>
 
-using std::uintptr_t;
-using namespace gd;
 using namespace cocos2d;
 using hook_t = std::tuple<uintptr_t, LPVOID, LPVOID*>;
 
@@ -21,5 +17,3 @@ namespace Mod {
 
 #include "registers/Hook.hpp"
 #include "registers/StaticIncludes.hpp"
-
-#pragma warning( pop )
