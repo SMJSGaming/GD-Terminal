@@ -14,9 +14,8 @@ template<bool TTF>
 std::vector<CCLabel<TTF>*> _getLines(std::string font, std::string text, float scale, float padding) {
     std::vector<CCLabel<TTF>*> lines;
     std::stringstream stream(text);
-    std::string line;
 
-    for (float top = 0; std::getline(stream, line); top -= padding) {
+    for (std::string line, float top = 0; std::getline(stream, line); top -= padding) {
         CCLabel<TTF>* label;
 
         if constexpr (TTF) {
@@ -48,14 +47,12 @@ namespace gd {
     template<bool TTF>
     struct BetterTextArea : public CCNode {
 
-        template<bool TTF = false>
         static BetterTextArea* create(std::string font, std::string text, float scale) {
             std::vector<CCLabel<TTF>*> lines = _getLines<TTF>(font, text, scale, 0);
 
             return BetterTextArea::create<TTF>(font, text, lines, scale, _maxLineWidth<TTF>(lines), false, false);
         }
 
-        template<bool TTF = false>
         static BetterTextArea* create(std::string font, std::string text, float scale, float width) {
             return BetterTextArea::create<TTF>(font, text, _getLines<TTF>(font, text, scale, 0), scale, width, true);
         }
