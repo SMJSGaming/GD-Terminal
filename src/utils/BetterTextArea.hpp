@@ -157,7 +157,7 @@ namespace gd {
             this->text = text;
             this->lines = lines;
             this->scale = scale;
-            this->lineHeight = lines.front()->getContentSize().height * scale;
+            this->lineHeight = lines.back()->getContentSize().height * scale;
             this->linePadding = 0;
             this->artificialWidth = artificialWidth;
             this->size = CCSize({ width, this->lines.front()->getContentSize().height * this->scale * lineCount + this->linePadding * (lineCount - 1) });
@@ -174,7 +174,7 @@ namespace gd {
 
             this->size = CCSize({
                 this->artificialWidth ? this->size.width : _maxLineWidth<TTF>(this->lines),
-                this->lines.front()->getContentSize().height * this->scale * lineCount + this->linePadding * (lineCount - 1)
+                this->lines.back()->getContentSize().height * lineCount + this->linePadding * (lineCount - 1)
             });
 
             this->removeAllChildren();
