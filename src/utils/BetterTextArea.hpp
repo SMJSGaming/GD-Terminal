@@ -82,20 +82,17 @@ namespace gd {
         }
 
         void setWidth(float width) {
-            this->size.width = width;
             this->artificialWidth = true;
+
+            this->setContentSize({ width, this->getContentSize().height });
         }
 
         float getWidth() {
-            return this->size.width;
+            return this->getContentSize().width;
         }
 
         float getHeight() {
-            return this->size.height;
-        }
-
-        CCSize getSize() {
-            return this->size;
+            return this->getContentSize().height;
         }
 
         void setScale(float scale) {
@@ -140,7 +137,6 @@ namespace gd {
         std::string font;
         std::string text;
         std::vector<CCLabel<TTF>*> lines;
-        CCSize size;
         float scale;
         float lineHeight;
         float linePadding;
@@ -157,7 +153,8 @@ namespace gd {
             this->lineHeight = lines.back()->getContentSize().height * scale;
             this->linePadding = 0;
             this->artificialWidth = artificialWidth;
-            this->size = CCSize({ width, this->lines.front()->getContentSize().height * this->scale * lineCount + this->linePadding * (lineCount - 1) });
+
+            this->setContentSize({ width, this->lineHeight * lineCount + this->linePadding * (lineCount - 1) });
 
             for (unsigned int i = 0; i < lineCount; i++) {
                 this->addChild(lines.at(i));
@@ -166,12 +163,13 @@ namespace gd {
 
         void updateContents() {
             this->lines = _getLines<TTF>(this->font, this->text, this->scale, this->linePadding);
+            this->lineHeight = this->lines.back()->getContentSize().height * this->scale;
 
             const unsigned int lineCount = this->lines.size();
 
-            this->size = CCSize({
-                this->artificialWidth ? this->size.width : _maxLineWidth<TTF>(this->lines),
-                this->lines.back()->getContentSize().height * lineCount + this->linePadding * (lineCount - 1)
+            this->setContentSize({
+                this->artificialWidth ? this->getWidth(): _maxLineWidth<TTF>(this->lines),
+                this->lineHeight * lineCount + this->linePadding * (lineCount - 1)
             });
 
             this->removeAllChildren();
