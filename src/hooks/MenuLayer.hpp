@@ -10,10 +10,9 @@ DEFINE_HOOK(bool, MenuLayer, init) {
     GJAccountManager* account = GJAccountManager::sharedState();
     CCDirector* director = CCDirector::sharedDirector();
     CCSize winSize = director->getWinSize();
-    CCSize marginedSize = winSize - CCSize(5, 5);
+    CCSize marginedSize = winSize - CCSize(PADDING, PADDING);
     BetterTextArea<false>* history = BetterTextArea<false>::create(FONT, START_TEXT, CHAR_SCALE, marginedSize.width);
-    CCSize historySize = history->getSize();
-    CCLabelBMFont* arrow = CCLabelBMFont::create((account->m_sUsername + ">").c_str(), FONT);
+    CCLabelBMFont* arrow = CCLabelBMFont::create((account->m_sUsername + "> ").c_str(), FONT);
     CCTextInputNode* input = CCTextInputNode::create("", self, FONT, marginedSize.width, 10);
 
     history->setLinePadding(1);
@@ -21,17 +20,19 @@ DEFINE_HOOK(bool, MenuLayer, init) {
     input->setMaxLabelScale(CHAR_SCALE);
     input->setAllowedChars(" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_\"'`<>()[]{}!?\\/.,:;+-*=");
 
-    history->setPosition({ 5, marginedSize.height });
-    arrow->setPosition({ 5, marginedSize.height - historySize.height });
-    input->setPosition({ 5.25f * (account->m_sUsername.length() + 2.0f), marginedSize.height - historySize.height });
-    
     arrow->setAnchorPoint({ 0, 0.5f });
     input->m_pPlaceholderLabel->setAnchorPoint({ 0, 0.6f });
     input->m_pTextField->setAnchorPoint({ 0, 0.6f });
 
+    const float historyHeight = history->getHeight() + history->getLinePadding() + history->getLineHeight();
+
+    history->setPosition({ PADDING, marginedSize.height });
+    arrow->setPosition({ PADDING, marginedSize.height - historyHeight });
+    input->setPosition({ arrow->getContentSize().width * 0.45f, marginedSize.height - historyHeight + PADDING * 0.1f });
+
     self->addChild(history);
-    //self->addChild(arrow);
-    //self->addChild(input);
+    self->addChild(arrow);
+    self->addChild(input);
 
     return true;
 }
