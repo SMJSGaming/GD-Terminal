@@ -14,8 +14,9 @@ template<bool TTF>
 std::vector<CCLabel<TTF>*> _getLines(std::string font, std::string text, float scale, float padding) {
     std::vector<CCLabel<TTF>*> lines;
     std::stringstream stream(text);
+    std::string line;
 
-    for (std::string line, float top = 0; std::getline(stream, line); top -= padding) {
+    for (float top = 0; std::getline(stream, line); top -= padding) {
         CCLabel<TTF>* label;
 
         if constexpr (TTF) {
