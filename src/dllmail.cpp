@@ -1,11 +1,14 @@
-#include "includes.hpp"
+#include <MinHook.h>
 
-std::vector<hook_t> Mod::hooks {};
+#include "includes.hpp"
+#include "registers/StaticIncludes.hpp"
+
+std::vector<hook_t> gd::hooks {};
 
 DWORD WINAPI thread_func(void* hModule) {
     MH_Initialize();
 
-    for (const hook_t& hook : Mod::hooks) {
+    for (const hook_t& hook : gd::hooks) {
         MH_CreateHook(
             reinterpret_cast<LPVOID>(gd::base + std::get<0>(hook)), 
             std::get<1>(hook), 
