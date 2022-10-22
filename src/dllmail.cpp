@@ -6,13 +6,15 @@
 std::vector<hook_t> gd::hooks {};
 
 DWORD WINAPI thread_func(void* hModule) {
+    uintptr_t cocosBase = reinterpret_cast<uintptr_t>(GetModuleHandleA("libcocos2d.dll"));
+
     MH_Initialize();
 
     for (const hook_t& hook : gd::hooks) {
         MH_CreateHook(
-            reinterpret_cast<LPVOID>(gd::base + std::get<0>(hook)), 
-            std::get<1>(hook), 
-            std::get<2>(hook)
+            reinterpret_cast<LPVOID>((std::get<0>(hook) ? cocosBase : gd::base) + std::get<1>(hook)), 
+            std::get<2>(hook), 
+            std::get<3>(hook)
         );
     }
 

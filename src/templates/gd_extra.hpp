@@ -10,10 +10,15 @@
 using std::uintptr_t;
 using namespace gd;
 using namespace cocos2d;
-using hook_t = std::tuple<uintptr_t, LPVOID, LPVOID*>;
+using hook_t = std::tuple<bool, uintptr_t, LPVOID, LPVOID*>;
 
 namespace gd {
     extern std::vector<hook_t> hooks;
+}
+
+namespace terminal {
+    extern MenuLayer* menuLayer;
+    extern std::vector<std::string> history;
 }
 
 #pragma warning( pop )

@@ -4,9 +4,10 @@
 
 using hook_float_t = void*;
 
-#define _CONCAT_LITERAL(a, b) a##b
-#define CONCAT_LITERAL(a, b) _CONCAT_LITERAL(a, b)
-#define HOOK(address, class, method) static Hook CONCAT_LITERAL(class##_##method, __LINE__)({ \
+#define GD_HOOK(address, class, method) HOOK(false, address, class, method)
+#define COCOS_HOOK(address, class, method) HOOK(true, address, class, method)
+#define HOOK(cocos, address, class, method) static Hook CONCAT_LITERAL(class##_##method, __LINE__)({ \
+    cocos, \
     address, \
     reinterpret_cast<LPVOID>(&class##_##method##_H), \
     reinterpret_cast<LPVOID*>(&class##_##method) \
