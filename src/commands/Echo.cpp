@@ -1,4 +1,5 @@
 #include "Echo.hpp"
+#include "../registers/RegisterCommand.hpp"
 
 Echo::Echo(): Command("echo", "Prints the provided arguments", {
     { 'r', "reverse", "Prints the line in reverse" },
@@ -53,4 +54,4 @@ std::string Echo::run(flags_t flags) {
     return line;
 }
 
-Echo;
+//REGISTER_COMMAND(Echo);
