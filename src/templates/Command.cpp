@@ -18,7 +18,7 @@ std::string Command::initialize(std::string line) {
                 return "Unknown command `" + word + '`';
             }
         } else if (quote) {
-            if (word[length - 1] == quote && word[length - 2] != '\\') {
+            if (word.back() == quote && word[length - 2] != '\\') {
                 quote = NULL;
                 word = word.substr(0, length - 1);
             }
@@ -62,7 +62,7 @@ std::string Command::initialize(std::string line) {
     if (quote) {
         return "Unexpected EOL while looking for matching `" + quote + '`';
     } else {
-        command->run(flags);
+        return command->run(flags);
     }
 }
 
