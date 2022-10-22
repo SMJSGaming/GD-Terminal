@@ -114,6 +114,7 @@ namespace gd {
         float getLinePadding() {
             return this->linePadding;
         }
+
     private:
         template<bool TTF>
         static BetterTextArea* create(std::string font, std::string text, std::vector<CCLabel<TTF>*> lines, float scale, float width, bool artificialWidth) {
