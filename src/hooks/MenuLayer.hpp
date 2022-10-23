@@ -1,6 +1,5 @@
 #pragma once
 
-#include <array>
 #include "../includes.hpp"
 #include "../templates/Command.hpp"
 #include "../templates/BetterTextArea.hpp"
