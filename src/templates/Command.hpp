@@ -9,13 +9,13 @@ using flags_t = std::map<std::string, std::string>;
 struct Command {
     static std::string initialize(std::string line);
 
-    std::string name;
-    std::string description;
-    documented_flags_t flags;
-
     Command(std::string name, std::string description, documented_flags_t flags);
 private:
-    static std::unordered_map<std::string, Command*> commands;
+    static std::unordered_map<std::string, Command*> m_commands;
+
+    std::string m_name;
+    std::string m_description;
+    documented_flags_t m_flags;
 protected:
     virtual std::string run(flags_t flags)=0;
 };

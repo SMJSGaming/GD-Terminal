@@ -13,12 +13,11 @@ using namespace cocos2d;
 using hook_t = std::tuple<bool, uintptr_t, LPVOID, LPVOID*>;
 
 namespace gd {
-    extern std::vector<hook_t> hooks;
+    extern std::vector<hook_t> m_hooks;
 }
 
 namespace terminal {
-    extern MenuLayer* menuLayer;
-    extern std::vector<std::string> history;
+    extern std::vector<std::string> m_history;
 }
 
 #pragma warning( pop )

@@ -2,7 +2,6 @@
 
 #include <array>
 #include "../includes.hpp"
-#include "../bindings/MenuLayerExtended.hpp"
 #include "../templates/Command.hpp"
 #include "../templates/BetterTextArea.hpp"
 #include "../templates/CursorNode.hpp"

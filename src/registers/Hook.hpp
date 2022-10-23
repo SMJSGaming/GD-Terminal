@@ -33,6 +33,6 @@ using hook_float_t = void*;
 
 struct Hook {
     Hook(hook_t hook) {
-        gd::hooks.push_back(hook);
+        gd::m_hooks.push_back(hook);
     }
 };

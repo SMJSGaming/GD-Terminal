@@ -1,6 +1,6 @@
 #include "Command.hpp"
 
-std::unordered_map<std::string, Command*> Command::commands {};
+std::unordered_map<std::string, Command*> Command::m_commands {};
 
 std::string Command::initialize(std::string line) {
     std::stringstream stream(line);
@@ -12,8 +12,8 @@ std::string Command::initialize(std::string line) {
         const unsigned int length = word.length();
 
         if (!command && length) {
-            if (Command::commands.find(word) != Command::commands.end()) {
-                command = Command::commands[word];
+            if (Command::m_commands.find(word) != Command::m_commands.end()) {
+                command = Command::m_commands[word];
             } else {
                 return "Unknown command `" + word + '`';
             }
@@ -37,16 +37,16 @@ std::string Command::initialize(std::string line) {
         } else if (word.find("--", 0) == 0) {
             std::string flagWord = word.substr(2, word.length() - 2);
 
-            if (std::find_if(command->flags.begin(), command->flags.end(), [&](const documented_flag_t& flag) {
+            if (std::find_if(command->m_flags.begin(), command->m_flags.end(), [&](const documented_flag_t& flag) {
                 return std::get<1>(flag) == flagWord;
-            }) != command->flags.end()) {
+            }) != command->m_flags.end()) {
                 flags.insert({ flagWord, "" });
             }
         } else if (word[0] == '-') {
             for (unsigned int i = 1; i < length; i++) {
-                if (std::find_if(command->flags.begin(), command->flags.end(), [&](const documented_flag_t& flag) {
+                if (std::find_if(command->m_flags.begin(), command->m_flags.end(), [&](const documented_flag_t& flag) {
                     return std::get<0>(flag) == word[i];
-                }) != command->flags.end()) {
+                }) != command->m_flags.end()) {
                     flags.insert({ std::string(1, word[i]), "" });
                 }
             }
@@ -67,9 +67,9 @@ std::string Command::initialize(std::string line) {
 }
 
 Command::Command(std::string name, std::string description, documented_flags_t flags) {
-    this->name = name;
-    this->description = description;
-    this->flags = flags;
+    this->m_name = name;
+    this->m_description = description;
+    this->m_flags = flags;
 
-    Command::commands[name] = this;
+    Command::m_commands[name] = this;
 }

@@ -53,32 +53,32 @@ namespace gd {
             return BetterTextArea::create<TTF>(font, text, _getLines<TTF>(font, text, scale, 0), scale, width, true);
         }
 
-        void setFont(std::string text) {
-            this->font = font;
+        void setFont(std::string font) {
+            this->m_font = font;
 
             this->updateContents();
         }
 
         std::string getFont() {
-            return this->font;
+            return this->m_font;
         }
 
         void setText(std::string text) {
-            this->text = text;
+            this->m_text = text;
 
             this->updateContents();
         }
 
         std::string getText() {
-            return this->text;
+            return this->m_text;
         }
 
         std::vector<CCLabel<TTF>*> getLines() {
-            return this->lines;
+            return this->m_lines;
         }
 
         void setWidth(float width) {
-            this->artificialWidth = true;
+            this->m_artificialWidth = true;
 
             this->setContentSize({ width, this->getContentSize().height });
         }
@@ -92,27 +92,27 @@ namespace gd {
         }
 
         void setScale(float scale) {
-            this->scale = scale;
+            this->m_scale = scale;
 
             this->updateContents();
         }
 
         float getScale() {
-            return this->scale;
+            return this->m_scale;
         }
 
         float getLineHeight() {
-            return this->lineHeight;
+            return this->m_lineHeight;
         }
 
         void setLinePadding(float padding) {
-            this->linePadding = padding;
+            this->m_linePadding = padding;
 
             this->updateContents();
         }
 
         float getLinePadding() {
-            return this->linePadding;
+            return this->m_linePadding;
         }
 
     private:
@@ -131,48 +131,47 @@ namespace gd {
             }
         }
 
-        std::string font;
-        std::string text;
-        std::vector<CCLabel<TTF>*> lines;
-        float scale;
-        float lineHeight;
-        float linePadding;
-        bool artificialWidth;
-        bool ttf;
+        std::string m_font;
+        std::string m_text;
+        std::vector<CCLabel<TTF>*> m_lines;
+        float m_scale;
+        float m_lineHeight;
+        float m_linePadding;
+        bool m_artificialWidth;
 
         BetterTextArea(std::string font, std::string text, std::vector<CCLabel<TTF>*> lines, float scale, float width, bool artificialWidth) {
             const unsigned int lineCount = lines.size();
 
-            this->font = font;
-            this->text = text;
-            this->lines = lines;
-            this->scale = scale;
-            this->lineHeight = lines.back()->getContentSize().height * scale;
-            this->linePadding = 0;
-            this->artificialWidth = artificialWidth;
+            this->m_font = font;
+            this->m_text = text;
+            this->m_lines = lines;
+            this->m_scale = scale;
+            this->m_lineHeight = lines.back()->getContentSize().height * scale;
+            this->m_linePadding = 0;
+            this->m_artificialWidth = artificialWidth;
 
-            this->setContentSize({ width, this->lineHeight * lineCount + this->linePadding * (lineCount - 1) });
+            this->setContentSize({ width, this->m_lineHeight * lineCount + this->m_linePadding * (lineCount - 1) });
 
             for (unsigned int i = 0; i < lineCount; i++) {
-                this->addChild(lines.at(i));
+                this->addChild(this->m_lines.at(i));
             }
         }
 
         void updateContents() {
-            this->lines = _getLines<TTF>(this->font, this->text, this->scale, this->linePadding);
-            this->lineHeight = this->lines.back()->getContentSize().height * this->scale;
+            this->m_lines = _getLines<TTF>(this->m_font, this->m_text, this->m_scale, this->m_linePadding);
+            this->m_lineHeight = this->m_lines.back()->getContentSize().height * this->m_scale;
 
-            const unsigned int lineCount = this->lines.size();
+            const unsigned int lineCount = this->m_lines.size();
 
             this->setContentSize({
-                this->artificialWidth ? this->getWidth(): _maxLineWidth<TTF>(this->lines),
-                this->lineHeight * lineCount + this->linePadding * (lineCount - 1)
+                this->m_artificialWidth ? this->getWidth(): _maxLineWidth<TTF>(this->m_lines),
+                this->m_lineHeight * lineCount + this->m_linePadding * (lineCount - 1)
             });
 
             this->removeAllChildren();
 
             for (unsigned int i = 0; i < lineCount; i++) {
-                this->addChild(lines.at(i));
+                this->addChild(this->m_lines.at(i));
             }
         }
     };
