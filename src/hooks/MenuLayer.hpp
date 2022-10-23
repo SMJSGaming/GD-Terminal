@@ -1,40 +1,64 @@
 #pragma once
 
+#include <array>
 #include "../includes.hpp"
 #include "../bindings/MenuLayerExtended.hpp"
-#include "../utils/BetterTextArea.hpp"
+#include "../templates/Command.hpp"
+#include "../templates/BetterTextArea.hpp"
+#include "../templates/CursorNode.hpp"
 #include "../configs/StaticConfig.hpp"
 
 DEFINE_HOOK(bool, MenuLayer, init) {
     GameSoundManager::sharedState()->stopBackgroundMusic();
-    GJAccountManager* account = GJAccountManager::sharedState();
-    CCDirector* director = CCDirector::sharedDirector();
-    CCSize winSize = director->getWinSize();
-    CCSize marginedSize = winSize - CCSize(PADDING, PADDING);
+    CCSize marginedSize = CCDirector::sharedDirector()->getWinSize() - CCSize(PADDING, PADDING);
     BetterTextArea<false>* history = BetterTextArea<false>::create(FONT, START_TEXT, CHAR_SCALE, marginedSize.width);
-    CCLabelBMFont* arrow = CCLabelBMFont::create((account->m_sUsername + "> ").c_str(), FONT);
-    CCTextInputNode* input = CCTextInputNode::create("", self, FONT, marginedSize.width, 10);
+    CCLabelBMFont* arrow = CCLabelBMFont::create((GJAccountManager::sharedState()->m_sUsername + ">").c_str(), FONT);
+    CCLabelBMFont* input = CCLabelBMFont::create("", FONT);
+    CCSize arrowSize = arrow->getContentSize();
+    CCSize charSize = CCSize(arrowSize.width / strlen(arrow->getString()), arrowSize.height) * CHAR_SCALE;
+    CursorNode* cursor = CursorNode::create(charSize.width);
 
     history->setLinePadding(1);
+
+    history->setTag(HISTORY);
+    arrow->setTag(ARROW);
+    input->setTag(INPUT);
+    input->setTag(CURSOR);
+
     arrow->setScale(CHAR_SCALE);
-    input->setMaxLabelScale(CHAR_SCALE);
-    input->setAllowedChars(" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_\"'`<>()[]{}!?\\/.,:;+-*=");
+    input->setScale(CHAR_SCALE);
 
     arrow->setAnchorPoint({ 0, 0.5f });
-    input->m_pPlaceholderLabel->setAnchorPoint({ 0, 0.6f });
-    input->m_pTextField->setAnchorPoint({ 0, 0.6f });
+    input->setAnchorPoint({ 0, 0.5f });
 
-    const float historyHeight = history->getHeight() + history->getLinePadding() + history->getLineHeight();
-
-    history->setPosition({ PADDING, marginedSize.height });
-    arrow->setPosition({ PADDING, marginedSize.height - historyHeight });
-    input->setPosition({ arrow->getContentSize().width * 0.45f, marginedSize.height - historyHeight + PADDING * 0.1f });
+    history->setPosition({
+        PADDING,
+        marginedSize.height
+    });
+    arrow->setPosition({
+        PADDING,
+        marginedSize.height - history->getHeight()
+    });
+    input->setPosition({
+        arrow->getPositionX() + arrowSize.width * CHAR_SCALE,
+        arrow->getPositionY()
+    });
+    cursor->setPosition({
+        input->getPositionX(),
+        input->getPositionY() - charSize.height * 0.5f
+    });
 
     self->addChild(history);
     self->addChild(arrow);
     self->addChild(input);
+    self->addChild(cursor);
 
     return true;
 }
 
-HOOK(0x1907B0, MenuLayer, init)
+DEFINE_HOOK(void, MenuLayer, keyDown, enumKeyCodes key) {
+    // Making it empty to stop the default behavior
+}
+
+GD_HOOK(0x1907B0, MenuLayer, init)
+GD_HOOK(0x1922C0, MenuLayer, keyDown)
