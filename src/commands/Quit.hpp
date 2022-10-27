@@ -5,5 +5,5 @@
 struct Quit : public Command {
     Quit();
 protected:
-    std::string run(flags_t flags);
+    std::string run(flags_t flags) override;
 };

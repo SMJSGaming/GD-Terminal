@@ -5,5 +5,5 @@
 struct Echo : public Command {
     Echo();
 protected:
-    std::string run(flags_t flags);
+    std::string run(flags_t flags) override;
 };
