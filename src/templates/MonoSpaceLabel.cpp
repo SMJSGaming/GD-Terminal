@@ -15,8 +15,7 @@ MonoSpaceLabel* gd::MonoSpaceLabel::create(const char* text, const char* font, f
 }
 
 CCSize gd::MonoSpaceLabel::getCharSize(bool scale) {
-    // H has an average character width making it perfect for reference
-    return CCLabelBMFont::create("H", this->getFntFile())->getContentSize() * (scale ? this->getScale() : 1);
+    return static_cast<CCSprite*>(CCLabelBMFont::create("M", this->getFntFile())->getChildren()->objectAtIndex(0))->getContentSize() * (scale ? this->getScale() : 1);
 }
 
 bool gd::MonoSpaceLabel::init(const char* text, const char* font, float scale) {
@@ -37,8 +36,9 @@ void gd::MonoSpaceLabel::updateLabel() {
     CCARRAY_FOREACH(m_pChildren, child) {
         CCSprite* sprite = static_cast<CCSprite*>(child);
 
+        sprite->setAnchorPoint({ 0, 0.5f });
         sprite->setPositionX(index++ * charSize.width);
     }
 
-    this->setContentSize({ charSize.width * index, charSize.height });
+    this->setContentSize({ charSize.width * index, this->getContentSize().height });
 }
