@@ -1,19 +1,16 @@
 #pragma once
 
 #include "../includes.hpp"
-#include "../templates/Command.hpp"
-#include "../templates/BetterTextArea.hpp"
-#include "../templates/CursorNode.hpp"
-#include "../configs/StaticConfig.hpp"
 
 DEFINE_HOOK(bool, MenuLayer, init) {
     GameSoundManager::sharedState()->stopBackgroundMusic();
+
+    terminal::m_menuLayer = self;
+    MonoSpaceLabel* input = MonoSpaceLabel::create("", FONT, CHAR_SCALE);
+    MonoSpaceLabel* arrow = MonoSpaceLabel::create((GJAccountManager::sharedState()->m_sUsername + ">").c_str(), FONT, CHAR_SCALE);
     CCSize marginedSize = CCDirector::sharedDirector()->getWinSize() - CCSize(PADDING, PADDING);
+    CCSize charSize = arrow->getCharSize();
     BetterTextArea<false>* history = BetterTextArea<false>::create(FONT, START_TEXT, CHAR_SCALE, marginedSize.width);
-    CCLabelBMFont* arrow = CCLabelBMFont::create((GJAccountManager::sharedState()->m_sUsername + ">").c_str(), FONT);
-    CCLabelBMFont* input = CCLabelBMFont::create("", FONT);
-    CCSize arrowSize = arrow->getContentSize();
-    CCSize charSize = CCSize(arrowSize.width / strlen(arrow->getString()), arrowSize.height) * CHAR_SCALE;
     CursorNode* cursor = CursorNode::create(charSize.width);
 
     history->setLinePadding(1);
@@ -21,10 +18,7 @@ DEFINE_HOOK(bool, MenuLayer, init) {
     history->setTag(HISTORY);
     arrow->setTag(ARROW);
     input->setTag(INPUT);
-    input->setTag(CURSOR);
-
-    arrow->setScale(CHAR_SCALE);
-    input->setScale(CHAR_SCALE);
+    cursor->setTag(CURSOR);
 
     arrow->setAnchorPoint({ 0, 0.5f });
     input->setAnchorPoint({ 0, 0.5f });
@@ -38,7 +32,7 @@ DEFINE_HOOK(bool, MenuLayer, init) {
         marginedSize.height - history->getHeight()
     });
     input->setPosition({
-        arrow->getPositionX() + arrowSize.width * CHAR_SCALE,
+        arrow->getPositionX() + arrow->getContentSize().width * CHAR_SCALE,
         arrow->getPositionY()
     });
     cursor->setPosition({
