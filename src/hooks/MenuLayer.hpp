@@ -10,7 +10,7 @@ DEFINE_HOOK(bool, MenuLayer, init) {
     MonoSpaceLabel* arrow = MonoSpaceLabel::create((GJAccountManager::sharedState()->m_sUsername + ">").c_str(), FONT, CHAR_SCALE);
     CCSize marginedSize = CCDirector::sharedDirector()->getWinSize() - CCSize(PADDING, PADDING);
     CCSize charSize = arrow->getCharSize();
-    BetterTextArea<false>* history = BetterTextArea<false>::create(FONT, START_TEXT, CHAR_SCALE, marginedSize.width);
+    BetterTextArea* history = BetterTextArea::create(FONT, START_TEXT, CHAR_SCALE);
     CursorNode* cursor = CursorNode::create(charSize.width);
 
     history->setLinePadding(1);
@@ -20,8 +20,10 @@ DEFINE_HOOK(bool, MenuLayer, init) {
     input->setTag(INPUT);
     cursor->setTag(CURSOR);
 
-    arrow->setAnchorPoint({ 0, 0.5f });
-    input->setAnchorPoint({ 0, 0.5f });
+    history->setAnchorPoint({ 0, 1 });
+    arrow->setAnchorPoint({ 0, 1 });
+    input->setAnchorPoint({ 0, 1 });
+    cursor->setAnchorPoint({ 0, 1 });
 
     history->setPosition({
         PADDING,
@@ -29,7 +31,7 @@ DEFINE_HOOK(bool, MenuLayer, init) {
     });
     arrow->setPosition({
         PADDING,
-        marginedSize.height - history->getHeight()
+        marginedSize.height - history->getContentSize().height
     });
     input->setPosition({
         arrow->getPositionX() + arrow->getContentSize().width * CHAR_SCALE,
@@ -37,7 +39,7 @@ DEFINE_HOOK(bool, MenuLayer, init) {
     });
     cursor->setPosition({
         input->getPositionX(),
-        input->getPositionY() - charSize.height * 0.5f
+        input->getPositionY() - charSize.height - cursor->getContentSize().height
     });
 
     self->addChild(history);
