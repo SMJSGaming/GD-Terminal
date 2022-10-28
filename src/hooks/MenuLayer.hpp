@@ -13,25 +13,25 @@ DEFINE_HOOK(bool, MenuLayer, init) {
     BetterTextArea* history = BetterTextArea::create(FONT, START_TEXT, CHAR_SCALE);
     CursorNode* cursor = CursorNode::create(charSize.width);
 
-    history->setLinePadding(1);
+    history->setLinePadding(3);
 
     history->setTag(HISTORY);
     arrow->setTag(ARROW);
     input->setTag(INPUT);
     cursor->setTag(CURSOR);
 
-    history->setAnchorPoint({ 0, 1 });
+    history->setAnchorPoint(CCPointZero);
     arrow->setAnchorPoint({ 0, 1 });
     input->setAnchorPoint({ 0, 1 });
     cursor->setAnchorPoint({ 0, 1 });
 
-    history->setPosition({
-        PADDING,
-        marginedSize.height
-    });
     arrow->setPosition({
         PADDING,
         marginedSize.height - history->getContentSize().height
+    });
+    history->setPosition({
+        PADDING,
+        arrow->getPositionY() - CHAR_SCALE
     });
     input->setPosition({
         arrow->getPositionX() + arrow->getContentSize().width * CHAR_SCALE,
