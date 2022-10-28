@@ -30,6 +30,14 @@ CCSize gd::BetterTextArea::getCharSize(bool scale) {
     return MonoSpaceLabel::create("", this->m_font, this->m_scale)->getCharSize(scale);
 }
 
+void gd::BetterTextArea::pushLine(const char* text, bool update) {
+    this->m_text.append("\n").append(text);
+
+    if (update) {
+        this->updateContents();
+    }
+}
+
 void gd::BetterTextArea::setFont(const char* font) {
     this->m_font = font;
 
@@ -47,7 +55,7 @@ void gd::BetterTextArea::setString(const char* text) {
 }
 
 const char* gd::BetterTextArea::getString() {
-    return this->m_text;
+    return this->m_text.c_str();
 }
 
 void gd::BetterTextArea::setScale(float scale) {
@@ -98,7 +106,7 @@ void gd::BetterTextArea::updateContents() {
     for (unsigned int i = 0; i < lineCount; i++) {
         MonoSpaceLabel* label = this->m_lines.at(i);
 
-        label->setPosition({ 0, this->getContentSize().height - charSize.height * i });
+        label->setPosition({ 0, this->getContentSize().height - charSize.height * i - this->m_linePadding * i });
 
         this->addChild(label);
     }

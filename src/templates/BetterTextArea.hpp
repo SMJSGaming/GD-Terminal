@@ -8,6 +8,7 @@ namespace gd {
 
         std::vector<MonoSpaceLabel*> getLines();
         CCSize getCharSize(bool scale = true);
+        void pushLine(const char* text, bool update = true);
         void setFont(const char* font);
         const char* getFont();
         void setString(const char* text);
@@ -18,8 +19,8 @@ namespace gd {
         float getLinePadding();
     private:
         std::vector<MonoSpaceLabel*> m_lines;
+        std::string m_text;
         const char* m_font;
-        const char* m_text;
         float m_scale;
         float m_linePadding;
 
