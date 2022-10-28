@@ -17,7 +17,10 @@ namespace gd {
 }
 
 namespace terminal {
+    extern MenuLayer* m_menuLayer;
     extern std::vector<std::string> m_history;
+    extern unsigned int m_cursorIndex;
+    extern unsigned int m_historyIndex;
 }
 
 #pragma warning( pop )
