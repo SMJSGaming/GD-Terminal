@@ -1,5 +1,4 @@
 #include "Quit.hpp"
-#include "../registers/RegisterCommand.hpp"
 
 Quit::Quit(): Command("quit", "Closes the game", {
     { 's', "save", "When overwritten with false or 0, the game will close without saving. It's true by default" },
@@ -23,5 +22,3 @@ std::string Quit::run(flags_t flags) {
     // If you see this then something *really* went wrong
     return "Quitting...";
 }
-
-//REGISTER_COMMAND(Quit);

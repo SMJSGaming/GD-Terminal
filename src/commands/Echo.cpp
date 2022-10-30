@@ -1,5 +1,4 @@
 #include "Echo.hpp"
-#include "../registers/RegisterCommand.hpp"
 
 Echo::Echo(): Command("echo", "Prints the provided arguments", {
     { 'r', "reverse", "Prints the line in reverse" },
@@ -9,7 +8,7 @@ Echo::Echo(): Command("echo", "Prints the provided arguments", {
 }) {}
 
 std::string Echo::run(flags_t flags) {
-    std::string line;
+    std::string line = flags.at("*");
     bool reverse = false;
     bool uppercase = false;
     bool lowercase = false;
@@ -31,11 +30,10 @@ std::string Echo::run(flags_t flags) {
             case 'n': {
                 number = std::stoi(value);
             } break;
-            default: {
-                line += value + ' ';
-            }
         }
     }
+
+    std::cout << line << std::endl;
 
     if (reverse) {
         std::reverse(line.begin(), line.end());
@@ -53,5 +51,3 @@ std::string Echo::run(flags_t flags) {
 
     return line;
 }
-
-//REGISTER_COMMAND(Echo);

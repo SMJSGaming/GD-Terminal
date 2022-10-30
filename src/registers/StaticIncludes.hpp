@@ -6,3 +6,4 @@
 
 // Commands
 #include "../commands/Echo.hpp"
+#include "../commands/Quit.hpp"

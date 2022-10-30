@@ -5,7 +5,7 @@
 DEFINE_HOOK(bool, MenuLayer, init) {
     GameSoundManager::sharedState()->stopBackgroundMusic();
 
-    terminal::m_menuLayer = self;
+    gd::m_menuLayer = self;
     MonoSpaceLabel* input = MonoSpaceLabel::create("", FONT, CHAR_SCALE);
     MonoSpaceLabel* arrow = MonoSpaceLabel::create((GJAccountManager::sharedState()->m_sUsername + ">").c_str(), FONT, CHAR_SCALE);
     CCSize marginedSize = CCDirector::sharedDirector()->getWinSize() - CCSize(PADDING, PADDING);

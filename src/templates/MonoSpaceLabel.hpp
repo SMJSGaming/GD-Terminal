@@ -1,6 +1,4 @@
 #pragma once
-#pragma warning( push )
-#pragma warning( disable : 4251 )
 
 #include <gd.h>
 #include <cocos2d.h>
@@ -18,5 +16,3 @@ namespace gd {
         void updateLabel() override;
     };
 }
-
-#pragma warning( pop )

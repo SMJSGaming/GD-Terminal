@@ -5,8 +5,9 @@
 
 #include "templates/gd_extra.hpp"
 #include "configs/StaticConfig.hpp"
+#include "templates/Command.hpp"
 #include "templates/MonoSpaceLabel.hpp"
 #include "templates/BetterTextArea.hpp"
 #include "templates/CursorNode.hpp"
-#include "templates/Command.hpp"
 #include "registers/Hook.hpp"
+#include "registers/RegisterCommand.hpp"

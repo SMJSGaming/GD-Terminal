@@ -1,38 +1,36 @@
 #include "Command.hpp"
 
-std::unordered_map<std::string, Command*> Command::m_commands {};
-
 std::string Command::initialize(std::string line) {
     std::stringstream stream(line);
-    flags_t flags;
     Command* command = nullptr;
     char quote = NULL;
-    
+    flags_t flags { { "*", "" } };
+
+    // TODO: Check for syntax errors in quotes
+    // TODO: Handle 1 word quoted strings
+    // TODO: Remove escapes
+
     for (std::string word; std::getline(stream, word, ' ');) {
         const unsigned int length = word.length();
 
         if (!command && length) {
             if (Command::m_commands.find(word) != Command::m_commands.end()) {
-                command = Command::m_commands[word];
+                command = Command::m_commands.at(word);
             } else {
                 return "Unknown command `" + word + '`';
             }
         } else if (quote) {
-            if (word.back() == quote && word[length - 2] != '\\') {
-                quote = NULL;
-                word = word.substr(0, length - 1);
+            std::string error = Command::handleQuotedString(word, quote, flags.at(flags.rbegin()->first).append(" "));
+
+            if (!error.empty()) {
+                return error;
             }
-
-            flags.rbegin()->second += " " + word;
         } else if (word[0] == '"' || word[0] == '\'' || word[0] == '`') {
-            std::string flagValue = flags.rbegin()->second;
+            std::reverse_iterator<flags_t::iterator> last = flags.rbegin();
+            std::string error = Command::handleQuotedString(word.erase(0, 1), quote = word[0], last->second.empty() ? flags.at(last->first) : flags.at("*"));
 
-            quote = word[0];
-
-            if (flags.size() && !flagValue.size()) {
-                flags.rbegin()->second = word.substr(1, length - 1);
-            } else {
-                flags.insert({ NULL, word.substr(1, length - 1) });
+            if (!error.empty()) {
+                return error;
             }
         } else if (word.find("--", 0) == 0) {
             std::string flagWord = word.substr(2, word.length() - 2);
@@ -51,19 +49,53 @@ std::string Command::initialize(std::string line) {
                 }
             }
         } else if (length) {
-            if (flags.size() && !flags.rbegin()->second.size()) {
-                flags.rbegin()->second = word;
+            std::reverse_iterator<flags_t::iterator> last = flags.rbegin();
+
+            if (!last->second.size()) {
+                flags.at(last->first) = word;
             } else {
-                flags.insert({ NULL, word });
+                flags.at("*").append(word).append(" ");
             }
         }
     }
 
     if (quote) {
-        return "Unexpected EOL while looking for matching `" + quote + '`';
+        std::string error = "Unexpected end of line while looking for matching `";
+
+        error.push_back(quote);
+
+        return error.append("`");
     } else {
         return command->run(flags);
     }
+}
+
+std::string Command::handleQuotedString(std::string word, char& quote, std::string& flagValue) {
+    std::stringstream stream(word);
+    bool escaped = word.size() > 1;
+    unsigned int index = 0;
+
+    for (std::string quoted; std::getline(stream, quoted, quote);) {
+        std::cout << stream.eof() << std::endl;
+        index += quoted.size();
+        
+        if (!escaped) {
+            return "Unexpected end of string";
+        }
+
+        if (escaped = quoted.back() == '\\') {
+            word.erase(index - 1, 1);
+        }
+    }
+
+    if (!escaped && word.back() == quote) {
+        quote = NULL;
+        flagValue.append(word.substr(0, word.length() - 1));
+    } else {
+        flagValue.append(word);
+    }
+
+    return "";
 }
 
 Command::Command(std::string name, std::string description, documented_flags_t flags) {
@@ -71,5 +103,9 @@ Command::Command(std::string name, std::string description, documented_flags_t f
     this->m_description = description;
     this->m_flags = flags;
 
-    Command::m_commands[name] = this;
+    Command::m_commands.insert({ this->m_name, this });
+}
+
+std::string Command::run(flags_t flags) {
+    return "Command `" + this->m_name + "` has not been implemented yet";
 }
