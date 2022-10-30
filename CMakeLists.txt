@@ -18,6 +18,7 @@ if (${CMAKE_BUILD_TYPE} STREQUAL "RelWithDebInfo")
     add_compile_definitions(SHOW_CONSOLE)
 endif()
 
+target_compile_definitions(${PROJECT_NAME} PRIVATE CC_DLL=)
 target_include_directories(${PROJECT_NAME} PRIVATE
   libraries/minhook/include
   libraries/gd.h/include
