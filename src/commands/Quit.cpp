@@ -8,8 +8,8 @@ std::string Quit::run(flags_t flags) {
     bool save = true;
 
     for (const auto& [ flag, value ] : flags) {
-        if (flag == "s" || flag == "save") {
-            save = !(value == "false" || value == "0");
+        if (flag[0] == 's') {
+            save = value != "false" && value != "0";
         }
     }
 
