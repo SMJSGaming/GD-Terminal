@@ -32,7 +32,5 @@ using hook_float_t = void*;
 #define REINSERT_FLOAT(variable, paramIndex) __asm movss xmm##paramIndex, variable;
 
 struct Hook {
-    Hook(hook_t hook) {
-        gd::m_hooks.push_back(hook);
-    }
+    Hook(hook_t hook);
 };
