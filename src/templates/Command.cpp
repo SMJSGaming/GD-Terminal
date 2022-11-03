@@ -3,15 +3,13 @@
 std::string Command::initialize(std::string line) {
     std::stringstream stream(line);
     Command* command = nullptr;
-    char quote = NULL;
     flags_t flags { { "*", "" } };
-
-    // TODO: Check for syntax errors in quotes
-    // TODO: Handle 1 word quoted strings
-    // TODO: Remove escapes
+    std::vector<char> quotes { '"', '\'', '`' };
+    char quote = NULL;
+    bool global = false;
 
     for (std::string word; std::getline(stream, word, ' ');) {
-        const unsigned int length = word.length();
+        const unsigned int length = word.size();
 
         if (!command && length) {
             if (Command::m_commands.find(word) != Command::m_commands.end()) {
@@ -20,20 +18,31 @@ std::string Command::initialize(std::string line) {
                 return "Unknown command `" + word + '`';
             }
         } else if (quote) {
-            std::string error = Command::handleQuotedString(word, quote, flags.at(flags.rbegin()->first).append(" "));
+            std::string& flag = global ? flags.at("*") : flags.at(flags.rbegin()->first);
+            std::string error = Command::handleQuotedString(word, quote, flag);
 
             if (!error.empty()) {
                 return error;
+            } else if (global || quote) {
+                flag.append(" ");
+            } else if (!quote) {
+                global = false;
             }
-        } else if (word[0] == '"' || word[0] == '\'' || word[0] == '`') {
+        } else if (std::count(quotes.begin(), quotes.end(), word[0])) {
             std::reverse_iterator<flags_t::iterator> last = flags.rbegin();
-            std::string error = Command::handleQuotedString(word.erase(0, 1), quote = word[0], last->second.empty() ? flags.at(last->first) : flags.at("*"));
+            global = last->second.empty();
+            std::string& flag = global ? flags.at(last->first) : flags.at("*");
+            std::string error = Command::handleQuotedString(word.erase(0, 1), quote = word[0], flag);
 
             if (!error.empty()) {
                 return error;
+            } else if (global || quote) {
+                flag.append(" ");
+            } else if (!quote) {
+                global = false;
             }
         } else if (word.find("--", 0) == 0) {
-            std::string flagWord = word.substr(2, word.length() - 2);
+            std::string flagWord = word.substr(2, word.size() - 2);
 
             if (std::find_if(command->m_flags.begin(), command->m_flags.end(), [&](const documented_flag_t& flag) {
                 return std::get<1>(flag) == flagWord;
@@ -41,15 +50,32 @@ std::string Command::initialize(std::string line) {
                 flags.insert({ flagWord, "" });
             }
         } else if (word[0] == '-') {
-            for (unsigned int i = 1; i < length; i++) {
-                if (std::find_if(command->m_flags.begin(), command->m_flags.end(), [&](const documented_flag_t& flag) {
-                    return std::get<0>(flag) == word[i];
+            for (const char& flag : word) {
+                if (std::find_if(command->m_flags.begin(), command->m_flags.end(), [&](const documented_flag_t& documented_flag) {
+                    return std::get<0>(documented_flag) == flag;
                 }) != command->m_flags.end()) {
-                    flags.insert({ std::string(1, word[i]), "" });
+                    flags.insert({ std::string(1, flag), "" });
                 }
             }
         } else if (length) {
             std::reverse_iterator<flags_t::iterator> last = flags.rbegin();
+
+            for (const char& quote : quotes) {
+                if (word.find(quote) != std::string::npos) {
+                    std::stringstream substream(word);
+                    unsigned int index = 0;
+
+                    for (std::string quoted; std::getline(substream, quoted, quote);) {
+                        if ((index += quoted.size()) < word.size()) {
+                            if (quoted.back() != '\\') {
+                                return "Unexpected start of quoted string";
+                            } else {
+                                word.erase(index - 1, 1);
+                            }
+                        }
+                    }
+                }
+            }
 
             if (!last->second.size()) {
                 flags.at(last->first) = word;
@@ -76,11 +102,10 @@ std::string Command::handleQuotedString(std::string word, char& quote, std::stri
     unsigned int index = 0;
 
     for (std::string quoted; std::getline(stream, quoted, quote);) {
-        std::cout << stream.eof() << std::endl;
         index += quoted.size();
         
         if (!escaped) {
-            return "Unexpected end of string";
+            return "Unexpected end of quoted string";
         }
 
         if (escaped = quoted.back() == '\\') {
