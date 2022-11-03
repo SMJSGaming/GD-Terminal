@@ -33,8 +33,6 @@ std::string Echo::run(flags_t flags) {
         }
     }
 
-    std::cout << line << std::endl;
-
     if (reverse) {
         std::reverse(line.begin(), line.end());
     }
