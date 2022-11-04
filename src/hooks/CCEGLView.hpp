@@ -1,8 +1,8 @@
 #pragma once
 
 #include "../includes.hpp"
-#include "../configs/StaticConfig.hpp"
-#include "../configs/SpecialCharCapitalization.hpp"
+#include "../statics/static_config.hpp"
+#include "../statics/special_char_caps.hpp"
 #include "../templates/MonoSpaceLabel.hpp"
 #include "../templates/BetterTextArea.hpp"
 #include "../templates/CursorNode.hpp"

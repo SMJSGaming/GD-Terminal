@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../includes.hpp"
-#include "../configs/StaticConfig.hpp"
+#include "../statics/static_config.hpp"
 #include "../templates/MonoSpaceLabel.hpp"
 #include "../templates/BetterTextArea.hpp"
 #include "../templates/CursorNode.hpp"
