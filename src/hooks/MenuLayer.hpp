@@ -1,6 +1,10 @@
 #pragma once
 
 #include "../includes.hpp"
+#include "../configs/StaticConfig.hpp"
+#include "../templates/MonoSpaceLabel.hpp"
+#include "../templates/BetterTextArea.hpp"
+#include "../templates/CursorNode.hpp"
 
 DEFINE_HOOK(bool, MenuLayer, init) {
     GameSoundManager::sharedState()->stopBackgroundMusic();

@@ -1,10 +1,6 @@
 #pragma once
 
-#include <gd.h>
-#include <cocos2d.h>
-
-using namespace gd;
-using namespace cocos2d;
+#include "../includes.hpp"
 
 namespace gd {
     struct MonoSpaceLabel : public cocos2d::CCLabelBMFont {

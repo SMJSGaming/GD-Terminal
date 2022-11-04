@@ -1,7 +1,13 @@
 #pragma once
 
 #include "../includes.hpp"
+#include "../configs/StaticConfig.hpp"
 #include "../configs/SpecialCharCapitalization.hpp"
+#include "../templates/MonoSpaceLabel.hpp"
+#include "../templates/BetterTextArea.hpp"
+#include "../templates/CursorNode.hpp"
+#include "../templates/Command.hpp"
+#include "../templates/TerminalCout.hpp"
 
 static std::vector<std::string> m_history {};
 static unsigned int m_cursorIndex = 0;

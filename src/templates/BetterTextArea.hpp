@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../includes.hpp"
+#include "MonoSpaceLabel.hpp"
 
 namespace gd {
     struct BetterTextArea : public CCNode {

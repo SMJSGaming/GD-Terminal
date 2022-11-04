@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../includes.hpp"
+#include "TerminalCout.hpp"
 
 using documented_flag_t = std::tuple<char, std::string, std::string>;
 using documented_flags_t = std::vector<documented_flag_t>;
