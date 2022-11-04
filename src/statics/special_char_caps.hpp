@@ -2,7 +2,7 @@
 
 #include <unordered_map>
 
-static const std::unordered_map<char, char> CAPITALIZATION_US_QWERTY {
+static const std::unordered_map<char, char> CAPITALIZATION_QWERTY {
     { '1', '!' },
     { '2', '@' },
     { '3', '#' },
