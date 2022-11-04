@@ -4,6 +4,7 @@ void Command::initialize(TerminalCout& cout, std::string line) {
     std::stringstream stream(line);
     Command* command = nullptr;
     flags_t flags { { "*", "" } };
+    std::vector<std::string> keys { "*" };
     std::vector<char> quotes { '"', '\'', '`' };
     char quote = NULL;
     bool global = false;
@@ -20,7 +21,7 @@ void Command::initialize(TerminalCout& cout, std::string line) {
                 return;
             }
         } else if (quote) {
-            std::string& flag = global ? flags.at("*") : flags.at(flags.rbegin()->first);
+            std::string& flag = global ? flags.at("*") : flags.at(*keys.rbegin());
             std::string error = Command::handleQuotedString(word, quote, flag);
 
             if (!error.empty()) {
@@ -33,9 +34,10 @@ void Command::initialize(TerminalCout& cout, std::string line) {
                 global = false;
             }
         } else if (std::count(quotes.begin(), quotes.end(), word[0])) {
-            std::reverse_iterator<flags_t::iterator> last = flags.rbegin();
-            global = last->second.empty();
-            std::string& flag = global ? flags.at(last->first) : flags.at("*");
+            std::string lastKey = *keys.rbegin();
+            std::string& lastValue = flags.at(lastKey);
+            global = lastValue.empty();
+            std::string& flag = global ? lastValue : flags.at("*");
             std::string error = Command::handleQuotedString(word.erase(0, 1), quote = word[0], flag);
 
             if (!error.empty()) {
@@ -48,23 +50,30 @@ void Command::initialize(TerminalCout& cout, std::string line) {
                 global = false;
             }
         } else if (word.find("--", 0) == 0) {
-            std::string flagWord = word.substr(2, word.size() - 2);
+            std::string flagWord = word.substr(2);
 
             if (std::find_if(command->m_flags.begin(), command->m_flags.end(), [&](const documented_flag_t& flag) {
                 return std::get<1>(flag) == flagWord;
             }) != command->m_flags.end()) {
                 flags.insert({ flagWord, "" });
+                keys.push_back(flagWord);
             }
         } else if (word[0] == '-') {
-            for (const char& flag : word) {
+            std::string flagWord = word.substr(1);
+
+            for (const char& flag : flagWord) {
                 if (std::find_if(command->m_flags.begin(), command->m_flags.end(), [&](const documented_flag_t& documented_flag) {
                     return std::get<0>(documented_flag) == flag;
                 }) != command->m_flags.end()) {
-                    flags.insert({ std::string(1, flag), "" });
+                    std::string key(1, flag);
+
+                    flags.insert({ key, "" });
+                    keys.push_back(key);
                 }
             }
         } else if (length) {
-            std::reverse_iterator<flags_t::iterator> last = flags.rbegin();
+            std::string lastKey = *keys.rbegin();
+            std::string& lastValue = flags.at(lastKey);
 
             for (const char& quote : quotes) {
                 if (word.find(quote) != std::string::npos) {
@@ -85,10 +94,10 @@ void Command::initialize(TerminalCout& cout, std::string line) {
                 }
             }
 
-            if (!last->second.size()) {
-                flags.at(last->first) = word;
-            } else {
+            if (lastValue.size()) {
                 flags.at("*").append(word).append(" ");
+            } else {
+                lastValue.append(word);
             }
         }
     }
