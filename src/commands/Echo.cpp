@@ -7,7 +7,7 @@ Echo::Echo(): Command("echo", "Prints the provided arguments", {
     { 'n', "number", "Prints the line a provided number of times" }
 }) {}
 
-std::string Echo::run(flags_t flags) {
+void Echo::run(TerminalCout& cout, flags_t flags) {
     std::string line = flags.at("*");
     bool reverse = false;
     bool uppercase = false;
@@ -47,5 +47,5 @@ std::string Echo::run(flags_t flags) {
         line += '\n' + line;
     }
 
-    return line;
+    cout << line;
 }

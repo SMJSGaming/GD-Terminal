@@ -1,6 +1,6 @@
 #include "Command.hpp"
 
-std::string Command::initialize(std::string line) {
+void Command::initialize(TerminalCout& cout, std::string line) {
     std::stringstream stream(line);
     Command* command = nullptr;
     flags_t flags { { "*", "" } };
@@ -15,14 +15,18 @@ std::string Command::initialize(std::string line) {
             if (Command::m_commands.find(word) != Command::m_commands.end()) {
                 command = Command::m_commands.at(word);
             } else {
-                return "Unknown command `" + word + '`';
+                cout << "Unknown command `" + word + '`';
+
+                return;
             }
         } else if (quote) {
             std::string& flag = global ? flags.at("*") : flags.at(flags.rbegin()->first);
             std::string error = Command::handleQuotedString(word, quote, flag);
 
             if (!error.empty()) {
-                return error;
+                cout << error;
+
+                return;
             } else if (global || quote) {
                 flag.append(" ");
             } else if (!quote) {
@@ -35,7 +39,9 @@ std::string Command::initialize(std::string line) {
             std::string error = Command::handleQuotedString(word.erase(0, 1), quote = word[0], flag);
 
             if (!error.empty()) {
-                return error;
+                cout << error;
+
+                return;
             } else if (global || quote) {
                 flag.append(" ");
             } else if (!quote) {
@@ -68,7 +74,9 @@ std::string Command::initialize(std::string line) {
                     for (std::string quoted; std::getline(substream, quoted, quote);) {
                         if ((index += quoted.size()) < word.size()) {
                             if (quoted.back() != '\\') {
-                                return "Unexpected start of quoted string";
+                                cout << "Unexpected start of quoted string";
+
+                                return;
                             } else {
                                 word.erase(index - 1, 1);
                             }
@@ -90,9 +98,9 @@ std::string Command::initialize(std::string line) {
 
         error.push_back(quote);
 
-        return error.append("`");
+        cout << error.append("`");
     } else {
-        return command->run(flags);
+        command->run(cout, flags);
     }
 }
 
@@ -131,6 +139,6 @@ Command::Command(std::string name, std::string description, documented_flags_t f
     Command::m_commands.insert({ this->m_name, this });
 }
 
-std::string Command::run(flags_t flags) {
-    return "Command `" + this->m_name + "` has not been implemented yet";
+void Command::run(TerminalCout& cout, flags_t flags) {
+    cout << std::string("Command `" + this->m_name + "` has not been implemented yet");
 }

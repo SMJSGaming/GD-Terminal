@@ -13,14 +13,6 @@ static std::vector<std::string> m_history {};
 static unsigned int m_cursorIndex = 0;
 static unsigned int m_historyIndex = 0;
 
-char keyToUpper(char key) {
-    if (CAPITALIZATION_US_QWERTY.find(key) != CAPITALIZATION_US_QWERTY.end()) {
-        return CAPITALIZATION_US_QWERTY.at(key);
-    } else {
-        return key;
-    }
-}
-
 DEFINE_HOOK(void, CCEGLView, onGLFWKeyCallback, GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (gd::m_menuLayer && (action == 1 || action == 2)) {
         MonoSpaceLabel* arrow = static_cast<MonoSpaceLabel*>(gd::m_menuLayer->getChildByTag(ARROW));
@@ -35,14 +27,17 @@ DEFINE_HOOK(void, CCEGLView, onGLFWKeyCallback, GLFWwindow* window, int key, int
             case GLFW_KEY_ENTER: {
                 if (!((GLFW_MOD_CONTROL | GLFW_MOD_ALT) & mods)) {
                     if (command.size()) {
+                        TerminalCout cout;
+
                         m_history.push_back(command);
                         history->pushLine((arrow->getString() + command).c_str(), false);
-                        history->pushLine(Command::initialize(command).c_str(), false);
-                        history->pushLine(" ");
                         input->setString("");
 
-                        m_cursorIndex = 0;
+                        Command::initialize(cout, command);
+                        cout << TerminalCout::endl << TerminalCout::space;
+                        cout >> history;
 
+                        m_cursorIndex = 0;
                         m_historyIndex = m_history.size();
                     } else {
                         history->pushLine((arrow->getString() + command).c_str());
@@ -150,14 +145,16 @@ DEFINE_HOOK(void, CCEGLView, onGLFWKeyCallback, GLFWwindow* window, int key, int
             }
             default: {
                 if (key >= 0 && key <= 255 && ((GLFW_MOD_ALT | GLFW_MOD_CONTROL) & mods) != (GLFW_MOD_ALT | GLFW_MOD_CONTROL)) {
-                    if (mods & GLFW_MOD_CONTROL && CAPITALIZATION_US_QWERTY.find(key) == CAPITALIZATION_US_QWERTY.end()) {
+                    const bool isSpecialKey = CAPITALIZATION_US_QWERTY.find(key) != CAPITALIZATION_US_QWERTY.end();
+
+                    if (mods & GLFW_MOD_CONTROL && !isSpecialKey) {
                         key = toupper(key);
 
                         input->setString(command.insert(m_cursorIndex++, 1, '^').c_str());
                     } else if (!(mods & GLFW_MOD_SHIFT)) {
                         key = tolower(key);
-                    } else {
-                        key = keyToUpper(key);
+                    } else if (isSpecialKey) {
+                        key = CAPITALIZATION_US_QWERTY.at(key);
                     }
 
                     input->setString(command.insert(m_cursorIndex++, 1, key).c_str());

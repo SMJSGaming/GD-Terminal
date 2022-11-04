@@ -4,7 +4,7 @@ Quit::Quit(): Command("quit", "Closes the game", {
     { 's', "save", "When overwritten with false or 0, the game will close without saving. It's true by default" },
 }) {}
 
-std::string Quit::run(flags_t flags) {
+void Quit::run(TerminalCout& cout, flags_t flags) {
     bool save = true;
 
     for (const auto& [ flag, value ] : flags) {
@@ -20,5 +20,5 @@ std::string Quit::run(flags_t flags) {
     exit(0);
 
     // If you see this then something *really* went wrong
-    return "Quitting...";
+    cout << "Quitting...";
 }
