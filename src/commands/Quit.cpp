@@ -1,6 +1,6 @@
 #include "Quit.hpp"
 
-Quit::Quit(): Command("quit", "Closes the game", {
+Quit::Quit(): Command("quit", "Closes the game", {}, {
     { FlagType::BOOL_TYPE, 's', "save", "When overwritten with false or 0, the game will close without saving. It's true by default" },
 }) {}
 

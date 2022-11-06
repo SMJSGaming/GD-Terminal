@@ -62,6 +62,8 @@ void Command::initialize(TerminalCout& cout, std::string line) {
             }) != command->m_flags.end()) {
                 flags.insert({ flagWord, "" });
                 keys.push_back(flagWord);
+            } else if (flagWord == "help") {
+                return Command::m_commands.at("help")->run(cout, { { "*", command->m_name } });
             }
         } else if (word[0] == '-') {
             std::string flagWord = word.substr(1);
@@ -80,6 +82,8 @@ void Command::initialize(TerminalCout& cout, std::string line) {
 
                     flags.insert({ key, "" });
                     keys.push_back(key);
+                } else if (flag == 'h') {
+                    return Command::m_commands.at("help")->run(cout, { { "*", command->m_name } });
                 }
             }
         } else if (length) {
@@ -167,6 +171,22 @@ float Command::parseFloat(std::string value) {
     }
 }
 
+std::string Command::startPadding(std::string value, unsigned int length) {
+    if (value.size() < length) {
+        value.insert(0, length - value.size(), ' ');
+    }
+
+    return value;
+}
+
+std::string Command::endPadding(std::string value, unsigned int length) {
+    if (value.size() < length) {
+        value.append(length - value.size(), ' ');
+    }
+
+    return value;
+}
+
 void Command::handleQuotedString(FlagType type, std::string word, char& quote, std::string& flagValue) {
     std::stringstream stream(word);
     bool escaped = word.size() > 1;
@@ -204,9 +224,10 @@ void Command::handleQuotedString(FlagType type, std::string word, char& quote, s
     }
 }
 
-Command::Command(std::string name, std::string description, documented_flags_t flags) {
+Command::Command(std::string name, std::string description, std::pair<std::string, std::string> globalArgs, documented_flags_t flags) {
     this->m_name = name;
     this->m_description = description;
+    this->m_globalArgs = globalArgs;
     this->m_flags = flags;
 
     Command::m_commands.insert({ this->m_name, this });

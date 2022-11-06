@@ -1,6 +1,6 @@
 #include "Echo.hpp"
 
-Echo::Echo(): Command("echo", "Prints the provided arguments", {
+Echo::Echo(): Command("echo", "Prints the provided arguments", { "args", "The arguments which will be printed" }, {
     { FlagType::VOID_TYPE, 'r', "reverse", "Prints the line in reverse" },
     { FlagType::VOID_TYPE, 'u', "uppercase", "Prints the line in uppercase" },
     { FlagType::VOID_TYPE, 'l', "lowercase", "Prints the line in lowercase" },

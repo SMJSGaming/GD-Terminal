@@ -7,3 +7,4 @@
 // Commands
 #include "../commands/Echo.hpp"
 #include "../commands/Quit.hpp"
+#include "../commands/Help.hpp"

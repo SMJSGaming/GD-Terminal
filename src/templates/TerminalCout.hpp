@@ -34,6 +34,8 @@ concept IterableMap = requires(const T& t) {
 struct TerminalCout {
     static const char endl = '\n';
     static const char space = ' ';
+    inline static const std::string blank = "\n\n";
+    inline static const std::string tab = "  ";
 
     template<class T> requires SupportedType<T>
     friend TerminalCout& operator<<(TerminalCout& cout, T val) {
