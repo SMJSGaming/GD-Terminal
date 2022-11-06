@@ -180,4 +180,4 @@ DEFINE_HOOK(void, CCEGLView, onGLFWKeyCallback, GLFWwindow* window, int key, int
     }
 }
 
-COCOS_HOOK(0xC3E20, CCEGLView, onGLFWKeyCallback)
+COCOS_HOOK(0xC3E20, CCEGLView, onGLFWKeyCallback);

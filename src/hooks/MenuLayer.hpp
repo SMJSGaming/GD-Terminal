@@ -58,5 +58,5 @@ DEFINE_HOOK(void, MenuLayer, keyDown, enumKeyCodes key) {
     // Making it empty to stop the default behavior
 }
 
-GD_HOOK(0x1907B0, MenuLayer, init)
-GD_HOOK(0x1922C0, MenuLayer, keyDown)
+GD_HOOK(0x1907B0, MenuLayer, init);
+GD_HOOK(0x1922C0, MenuLayer, keyDown);
