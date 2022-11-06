@@ -37,7 +37,7 @@ void gd::MonoSpaceLabel::updateLabel() {
         CCSprite* sprite = static_cast<CCSprite*>(child);
 
         sprite->setAnchorPoint({ 0, 0.5f });
-        sprite->setPositionX(index++ * charSize.width);
+        sprite->setPositionX(index++ * charSize.width + (charSize.width - sprite->getContentSize().width) / 2);
     }
 
     this->setContentSize({ charSize.width * index, this->getContentSize().height });
