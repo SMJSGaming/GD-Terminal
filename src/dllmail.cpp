@@ -1,7 +1,6 @@
 #include <MinHook.h>
 
 #include "includes.hpp"
-#include "registers/StaticIncludes.hpp"
 
 DWORD WINAPI thread_func(void* hModule) {
     uintptr_t cocosBase = reinterpret_cast<uintptr_t>(GetModuleHandleA("libcocos2d.dll"));

@@ -15,9 +15,11 @@ using hook_float_t = void*;
 #define DEFINE_HOOK(type, class, method, ...) \
     _DEFINE_TRAMPOLINE(type, thiscall, class##_##method, class* self, __VA_ARGS__) \
     _DEFINE_DETOUR(type, class##_##method, class* self, void* edx, __VA_ARGS__)
+#define IMPLEMENT_HOOK(type, class, method, ...) _DEFINE_DETOUR(type, class##_##method, class* self, void* edx, __VA_ARGS__)
 #define DEFINE_STATIC_HOOK(type, class, method, ...) \
     _DEFINE_TRAMPOLINE(type, fastcall, class##_##method, __VA_ARGS__) \
     _DEFINE_DETOUR(type, class##_##method, __VA_ARGS__)
+#define IMPLEMENT_STATIC_HOOK(type, class, method, ...) _DEFINE_DETOUR(type, class##_##method, __VA_ARGS__)
 #define DEFINE_FLOATING_HOOK(type, class, method, ...) \
     _DEFINE_TRAMPOLINE(type, thiscall, class##_##method, class* self) \
     _DEFINE_DETOUR(type, class##_##method, class* self, void* edx, __VA_ARGS__)
