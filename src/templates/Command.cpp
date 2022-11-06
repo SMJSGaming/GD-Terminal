@@ -150,11 +150,9 @@ bool Command::parseBool(std::string value) {
 int Command::parseInt(std::string value) {
     try {
         return std::stoi(value);
-    } catch (const std::invalid_argument& exception) {
-        UNUSED(exception);
+    } catch (const std::invalid_argument&) {
         throw std::invalid_argument("Expected an integer value");
-    } catch (const std::out_of_range& exception) {
-        UNUSED(exception);
+    } catch (const std::out_of_range&) {
         throw std::invalid_argument("Integer value out of range");
     }
 }
@@ -162,11 +160,9 @@ int Command::parseInt(std::string value) {
 float Command::parseFloat(std::string value) {
     try {
         return std::stof(value);
-    } catch (const std::invalid_argument& exception) {
-        UNUSED(exception);
+    } catch (const std::invalid_argument&) {
         throw std::invalid_argument("Expected a float value");
-    } catch (const std::out_of_range& exception) {
-        UNUSED(exception);
+    } catch (const std::out_of_range&) {
         throw std::invalid_argument("Float value out of range");
     }
 }

@@ -1,6 +1,5 @@
 #pragma once
 
-#define UNUSED(x) x
 #define _CONCAT_LITERAL(a, b) a##b
 #define CONCAT_LITERAL(a, b) _CONCAT_LITERAL(a, b)
 
