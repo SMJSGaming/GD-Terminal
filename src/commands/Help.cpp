@@ -31,7 +31,7 @@ void Help::run(TerminalCout& cout, flags_t flags) {
             << TerminalCout::blank;
     }
 
-    cout << "FLAGS" << TerminalCout::endl;
+    cout << "FLAGS";
 
     for (const auto& [ type, charFlag, wordFlag, description ] : command->m_flags) {
         cout << TerminalCout::endl << Command::endPadding(TerminalCout::tab + "-" + charFlag + ", --" + wordFlag, 30) << description;
