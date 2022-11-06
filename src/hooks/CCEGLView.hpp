@@ -39,7 +39,7 @@ DEFINE_HOOK(void, CCEGLView, onGLFWKeyCallback, GLFWwindow* window, int key, int
                             cout << exception.what();
                         }
 
-                        cout << TerminalCout::endl << TerminalCout::space;
+                        cout << TerminalCout::blank;
                         cout >> history;
 
                         m_cursorIndex = 0;
@@ -175,6 +175,7 @@ DEFINE_HOOK(void, CCEGLView, onGLFWKeyCallback, GLFWwindow* window, int key, int
             input->getPositionX() + m_cursorIndex * charSize.width,
             cursor->getPositionY()
         });
+        cursor->setVisible(true);
     } else {
         CCEGLView_onGLFWKeyCallback(self, window, key, scancode, action, mods);
     }
