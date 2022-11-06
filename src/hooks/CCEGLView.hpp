@@ -33,7 +33,12 @@ DEFINE_HOOK(void, CCEGLView, onGLFWKeyCallback, GLFWwindow* window, int key, int
                         history->pushLine((arrow->getString() + command).c_str(), false);
                         input->setString("");
 
-                        Command::initialize(cout, command);
+                        try {
+                            Command::initialize(cout, command);
+                        } catch (const std::invalid_argument& exception) {
+                            cout << exception.what();
+                        }
+
                         cout << TerminalCout::endl << TerminalCout::space;
                         cout >> history;
 
@@ -145,7 +150,7 @@ DEFINE_HOOK(void, CCEGLView, onGLFWKeyCallback, GLFWwindow* window, int key, int
             }
             default: {
                 if (key >= 0 && key <= 255 && ((GLFW_MOD_ALT | GLFW_MOD_CONTROL) & mods) != (GLFW_MOD_ALT | GLFW_MOD_CONTROL)) {
-                    const bool isSpecialKey = CAPITALIZATION_US_QWERTY.find(key) != CAPITALIZATION_US_QWERTY.end();
+                    const bool isSpecialKey = CAPITALIZATION_QWERTY.find(key) != CAPITALIZATION_QWERTY.end();
 
                     if (mods & GLFW_MOD_CONTROL && !isSpecialKey) {
                         key = toupper(key);
@@ -154,7 +159,7 @@ DEFINE_HOOK(void, CCEGLView, onGLFWKeyCallback, GLFWwindow* window, int key, int
                     } else if (!(mods & GLFW_MOD_SHIFT)) {
                         key = tolower(key);
                     } else if (isSpecialKey) {
-                        key = CAPITALIZATION_US_QWERTY.at(key);
+                        key = CAPITALIZATION_QWERTY.at(key);
                     }
 
                     input->setString(command.insert(m_cursorIndex++, 1, key).c_str());

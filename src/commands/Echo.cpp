@@ -1,10 +1,10 @@
 #include "Echo.hpp"
 
 Echo::Echo(): Command("echo", "Prints the provided arguments", {
-    { 'r', "reverse", "Prints the line in reverse" },
-    { 'u', "uppercase", "Prints the line in uppercase" },
-    { 'l', "lowercase", "Prints the line in lowercase" },
-    { 'n', "number", "Prints the line a provided number of times" }
+    { FlagType::VOID_TYPE, 'r', "reverse", "Prints the line in reverse" },
+    { FlagType::VOID_TYPE, 'u', "uppercase", "Prints the line in uppercase" },
+    { FlagType::VOID_TYPE, 'l', "lowercase", "Prints the line in lowercase" },
+    { FlagType::INT_TYPE, 'n', "number", "Prints the line a provided number of times" }
 }) {}
 
 void Echo::run(TerminalCout& cout, flags_t flags) {
@@ -28,7 +28,7 @@ void Echo::run(TerminalCout& cout, flags_t flags) {
                 lowercase = true;
             } break;
             case 'n': {
-                number = std::stoi(value);
+                number = Command::parseInt(value);
             } break;
         }
     }
@@ -43,9 +43,11 @@ void Echo::run(TerminalCout& cout, flags_t flags) {
         std::transform(line.begin(), line.end(), line.begin(), ::tolower);
     }
 
-    for (unsigned int i = 1; i < number; i++) {
-        line += '\n' + line;
+    for (unsigned int i = 0; i < number; i++) {
+        if (i) {
+            cout << TerminalCout::endl << line;
+        } else {
+            cout << line;
+        }
     }
-
-    cout << line;
 }

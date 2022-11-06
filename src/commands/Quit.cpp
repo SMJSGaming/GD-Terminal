@@ -1,7 +1,7 @@
 #include "Quit.hpp"
 
 Quit::Quit(): Command("quit", "Closes the game", {
-    { 's', "save", "When overwritten with false or 0, the game will close without saving. It's true by default" },
+    { FlagType::BOOL_TYPE, 's', "save", "When overwritten with false or 0, the game will close without saving. It's true by default" },
 }) {}
 
 void Quit::run(TerminalCout& cout, flags_t flags) {
@@ -9,7 +9,7 @@ void Quit::run(TerminalCout& cout, flags_t flags) {
 
     for (const auto& [ flag, value ] : flags) {
         if (flag[0] == 's') {
-            save = value != "false" && value != "0";
+            save = Command::parseBool(value);
         }
     }
 

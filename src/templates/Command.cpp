@@ -1,59 +1,64 @@
 #include "Command.hpp"
 
 void Command::initialize(TerminalCout& cout, std::string line) {
+    const std::vector<char> quotes { '"', '\'', '`' };
     std::stringstream stream(line);
     Command* command = nullptr;
     flags_t flags { { "*", "" } };
     std::vector<std::string> keys { "*" };
-    std::vector<char> quotes { '"', '\'', '`' };
+    std::string& globalValue = flags.at("*");
+    FlagType type = FlagType::VOID_TYPE;
     char quote = NULL;
     bool global = false;
 
     for (std::string word; std::getline(stream, word, ' ');) {
         const unsigned int length = word.size();
+        const std::string lastKey = *keys.rbegin();
+        std::string& lastValue = flags.at(lastKey);
 
         if (!command && length) {
             if (Command::m_commands.find(word) != Command::m_commands.end()) {
                 command = Command::m_commands.at(word);
             } else {
-                cout << "Unknown command `" + word + '`';
-
-                return;
+                throw std::invalid_argument("Unknown command: " + word);
             }
         } else if (quote) {
-            std::string& flag = global ? flags.at("*") : flags.at(*keys.rbegin());
-            std::string error = Command::handleQuotedString(word, quote, flag);
+            std::string& flag = global ? globalValue : lastValue;
 
-            if (!error.empty()) {
-                cout << error;
+            Command::handleQuotedString(type, word, quote, flag);
 
-                return;
-            } else if (global || quote) {
-                flag.append(" ");
-            } else if (!quote) {
+            if (quote) {
+                if (global) {
+                    flag.append(" ");
+                }
+            } else {
+                type = FlagType::VOID_TYPE;
                 global = false;
             }
         } else if (std::count(quotes.begin(), quotes.end(), word[0])) {
-            std::string lastKey = *keys.rbegin();
-            std::string& lastValue = flags.at(lastKey);
-            global = lastValue.empty();
-            std::string& flag = global ? lastValue : flags.at("*");
-            std::string error = Command::handleQuotedString(word.erase(0, 1), quote = word[0], flag);
+            std::string& flag = (global = lastValue.empty() && lastKey != "*" && type != FlagType::VOID_TYPE) ? lastValue : globalValue;
 
-            if (!error.empty()) {
-                cout << error;
+            Command::handleQuotedString(type, word.substr(1), quote = word[0], flag);
 
-                return;
-            } else if (global || quote) {
-                flag.append(" ");
-            } else if (!quote) {
+            if (quote) {
+                if (global) {
+                    flag.append(" ");
+                }
+            } else {
+                type = FlagType::VOID_TYPE;
                 global = false;
             }
         } else if (word.find("--", 0) == 0) {
             std::string flagWord = word.substr(2);
 
             if (std::find_if(command->m_flags.begin(), command->m_flags.end(), [&](const documented_flag_t& flag) {
-                return std::get<1>(flag) == flagWord;
+                if (std::get<2>(flag) == flagWord) {
+                    type = std::get<0>(flag);
+
+                    return true;
+                } else {
+                    return false;
+                }
             }) != command->m_flags.end()) {
                 flags.insert({ flagWord, "" });
                 keys.push_back(flagWord);
@@ -63,7 +68,13 @@ void Command::initialize(TerminalCout& cout, std::string line) {
 
             for (const char& flag : flagWord) {
                 if (std::find_if(command->m_flags.begin(), command->m_flags.end(), [&](const documented_flag_t& documented_flag) {
-                    return std::get<0>(documented_flag) == flag;
+                    if (std::get<1>(documented_flag) == flag) {
+                        type = std::get<0>(documented_flag);
+
+                        return true;
+                    } else {
+                        return false;
+                    }
                 }) != command->m_flags.end()) {
                     std::string key(1, flag);
 
@@ -72,9 +83,6 @@ void Command::initialize(TerminalCout& cout, std::string line) {
                 }
             }
         } else if (length) {
-            std::string lastKey = *keys.rbegin();
-            std::string& lastValue = flags.at(lastKey);
-
             for (const char& quote : quotes) {
                 if (word.find(quote) != std::string::npos) {
                     std::stringstream substream(word);
@@ -83,9 +91,7 @@ void Command::initialize(TerminalCout& cout, std::string line) {
                     for (std::string quoted; std::getline(substream, quoted, quote);) {
                         if ((index += quoted.size()) < word.size()) {
                             if (quoted.back() != '\\') {
-                                cout << "Unexpected start of quoted string";
-
-                                return;
+                                throw std::invalid_argument("Unexpected end of quoted string");
                             } else {
                                 word.erase(index - 1, 1);
                             }
@@ -94,26 +100,74 @@ void Command::initialize(TerminalCout& cout, std::string line) {
                 }
             }
 
-            if (lastValue.size()) {
-                flags.at("*").append(word).append(" ");
-            } else {
-                lastValue.append(word);
+            switch (type) {
+                case FlagType::VOID_TYPE: {
+                    if (globalValue.size()) {
+                        globalValue.append(" ");
+                    }
+
+                    globalValue.append(word);
+                } break;
+                case FlagType::BOOL_TYPE: {
+                    Command::parseBool(word);
+                }
+                case FlagType::INT_TYPE: {
+                    Command::parseInt(word);
+                }
+                case FlagType::FLOAT_TYPE: {
+                    Command::parseFloat(word);
+                }
+                default: {
+                    lastValue.append(word);
+                }
             }
+
+            type = FlagType::VOID_TYPE;
         }
     }
 
     if (quote) {
-        std::string error = "Unexpected end of line while looking for matching `";
-
-        error.push_back(quote);
-
-        cout << error.append("`");
+        cout << "Unexpected end of line while looking for matching `" << quote << '`';
     } else {
         command->run(cout, flags);
     }
 }
 
-std::string Command::handleQuotedString(std::string word, char& quote, std::string& flagValue) {
+bool Command::parseBool(std::string value) {
+    if (value == "true" || value == "1") {
+        return true;
+    } else if (value == "false" || value == "0") {
+        return false;
+    } else {
+        throw std::invalid_argument("Expected a boolean value");
+    }
+}
+
+int Command::parseInt(std::string value) {
+    try {
+        return std::stoi(value);
+    } catch (const std::invalid_argument& exception) {
+        UNUSED(exception);
+        throw std::invalid_argument("Expected an integer value");
+    } catch (const std::out_of_range& exception) {
+        UNUSED(exception);
+        throw std::invalid_argument("Integer value out of range");
+    }
+}
+
+float Command::parseFloat(std::string value) {
+    try {
+        return std::stof(value);
+    } catch (const std::invalid_argument& exception) {
+        UNUSED(exception);
+        throw std::invalid_argument("Expected a float value");
+    } catch (const std::out_of_range& exception) {
+        UNUSED(exception);
+        throw std::invalid_argument("Float value out of range");
+    }
+}
+
+void Command::handleQuotedString(FlagType type, std::string word, char& quote, std::string& flagValue) {
     std::stringstream stream(word);
     bool escaped = word.size() > 1;
     unsigned int index = 0;
@@ -122,7 +176,7 @@ std::string Command::handleQuotedString(std::string word, char& quote, std::stri
         index += quoted.size();
         
         if (!escaped) {
-            return "Unexpected end of quoted string";
+            throw std::invalid_argument("Unexpected end of quoted string");
         }
 
         if (escaped = quoted.back() == '\\') {
@@ -133,11 +187,21 @@ std::string Command::handleQuotedString(std::string word, char& quote, std::stri
     if (!escaped && word.back() == quote) {
         quote = NULL;
         flagValue.append(word.substr(0, word.length() - 1));
+
+        switch (type) {
+            case FlagType::BOOL_TYPE: {
+                Command::parseBool(flagValue);
+            }
+            case FlagType::INT_TYPE: {
+                Command::parseInt(flagValue);
+            }
+            case FlagType::FLOAT_TYPE: {
+                Command::parseFloat(flagValue);
+            }
+        }
     } else {
         flagValue.append(word);
     }
-
-    return "";
 }
 
 Command::Command(std::string name, std::string description, documented_flags_t flags) {
