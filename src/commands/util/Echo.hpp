@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../includes.hpp"
-#include "../templates/TerminalCout.hpp"
-#include "../templates/CommandExecuter.hpp"
+#include "../../includes.hpp"
+#include "../../templates/TerminalCout.hpp"
+#include "../../templates/CommandExecuter.hpp"
 
 struct Echo : public Command {
     Echo();
