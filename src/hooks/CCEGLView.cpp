@@ -1,7 +1,7 @@
 #include "CCEGLView.hpp"
 
 IMPLEMENT_HOOK(void, CCEGLView, onGLFWKeyCallback, GLFWwindow* window, int key, int scancode, int action, int mods) {
-    if (gd::m_menuLayer && (action == 1 || action == 2)) {
+    if (gd::m_menuLayer && (action == 1 || action == 2) && !m_silenced) {
         MonoSpaceLabel* arrow = static_cast<MonoSpaceLabel*>(gd::m_menuLayer->getChildByTag(ARROW));
         MonoSpaceLabel* input = static_cast<MonoSpaceLabel*>(gd::m_menuLayer->getChildByTag(INPUT));
         BetterTextArea* history = static_cast<BetterTextArea*>(gd::m_menuLayer->getChildByTag(HISTORY));
@@ -13,40 +13,24 @@ IMPLEMENT_HOOK(void, CCEGLView, onGLFWKeyCallback, GLFWwindow* window, int key, 
         switch (key) {
             case GLFW_KEY_ENTER: {
                 if (!((GLFW_MOD_CONTROL | GLFW_MOD_ALT) & mods)) {
-                    if (command.size()) {
-                        TerminalCout cout;
+                    m_silenced = true;
 
+                    if (command.size()) {
                         m_history.push_back(command);
                         history->pushLine((arrow->getString() + command).c_str(), false);
-                        input->setString("");
-
-                        try {
-                            Command::initialize(cout, command);
-                        } catch (const std::invalid_argument& exception) {
-                            cout << exception.what();
-                        }
-
-                        cout << TerminalCout::blank;
-                        cout >> history;
+                        cursor->toggle();
 
                         m_cursorIndex = 0;
                         m_historyIndex = m_history.size();
+
+                        CommandExecuter::initialize(command);
                     } else {
                         history->pushLine((arrow->getString() + command).c_str());
+
+                        reposition_elements();
                     }
 
-                    float historyHeight = CCDirector::sharedDirector()->getWinSize().height - history->getContentSize().height - PADDING;
-                    float arrowHeight = arrow->getContentSize().height;
-
-                    arrow->setPosition({
-                        arrow->getPositionX(),
-                        historyHeight - arrowHeight > PADDING ? historyHeight : PADDING + arrowHeight
-                    });
-                    input->setPosition({
-                        input->getPositionX(),
-                        arrow->getPositionY()
-                    });
-                    cursor->setPositionY(input->getPositionY() - charSize.height - cursor->getContentSize().height);
+                    return;
                 }
             } break;
             case GLFW_KEY_RIGHT: {
@@ -162,7 +146,7 @@ IMPLEMENT_HOOK(void, CCEGLView, onGLFWKeyCallback, GLFWwindow* window, int key, 
             input->getPositionX() + m_cursorIndex * charSize.width,
             cursor->getPositionY()
         });
-        cursor->setVisible(true);
+        cursor->reset();
     } else {
         CCEGLView_onGLFWKeyCallback(self, window, key, scancode, action, mods);
     }

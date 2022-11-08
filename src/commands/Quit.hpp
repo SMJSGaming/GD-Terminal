@@ -2,7 +2,7 @@
 
 #include "../includes.hpp"
 #include "../templates/TerminalCout.hpp"
-#include "../templates/Command.hpp"
+#include "../templates/CommandExecuter.hpp"
 
 struct Quit : public Command {
     Quit();

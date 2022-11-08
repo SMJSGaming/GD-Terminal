@@ -6,8 +6,9 @@
 #include "../templates/MonoSpaceLabel.hpp"
 #include "../templates/BetterTextArea.hpp"
 #include "../templates/CursorNode.hpp"
-#include "../templates/Command.hpp"
+#include "../templates/CommandExecuter.hpp"
 #include "../templates/TerminalCout.hpp"
+#include "../methods/reposition_elements.hpp"
 
 static std::vector<std::string> m_history {};
 static unsigned int m_cursorIndex = 0;
