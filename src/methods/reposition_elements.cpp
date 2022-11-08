@@ -1,6 +1,6 @@
 #include "reposition_elements.hpp"
 
-void reposition_elements() {
+void reposition_elements(bool destroyMenu) {
     MonoSpaceLabel* arrow = static_cast<MonoSpaceLabel*>(gd::m_menuLayer->getChildByTag(ARROW));
     MonoSpaceLabel* input = static_cast<MonoSpaceLabel*>(gd::m_menuLayer->getChildByTag(INPUT));
     BetterTextArea* history = static_cast<BetterTextArea*>(gd::m_menuLayer->getChildByTag(HISTORY));
@@ -29,4 +29,8 @@ void reposition_elements() {
     cursor->toggle();
 
     m_silenced = false;
+
+    if (destroyMenu) {
+        gd::m_menuLayer = nullptr;
+    }
 }

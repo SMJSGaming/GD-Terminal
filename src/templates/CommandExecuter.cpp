@@ -146,7 +146,7 @@ void CommandExecuter::initialize(std::string line) {
         }
     } catch (const std::invalid_argument& exception) {
         CommandExecuter::m_cout << exception.what();
-        CommandExecuter::finished();
+        CommandExecuter::finished(false);
     }
 }
 
@@ -199,31 +199,32 @@ void CommandExecuter::handleQuotedString(FlagType type, std::string word, char& 
     }
 }
 
-void CommandExecuter::finished() {
+void CommandExecuter::finished(bool willTransition) {
     BetterTextArea* history = static_cast<BetterTextArea*>(gd::m_menuLayer->getChildByTag(HISTORY));
 
     CommandExecuter::m_cout << TerminalCout::endl << TerminalCout::space;
     CommandExecuter::m_cout >> history;
 
-    reposition_elements();
+    reposition_elements(willTransition);
 }
 
 CommandExecuter::CommandExecuter(Command* command, flags_t flags) {
     this->m_command = command;
     command->m_finished = false;
+    command->m_willTransition = false;
 
     command->run(CommandExecuter::m_cout, flags);
 
     if (command->m_async) {
         CCDirector::sharedDirector()->getScheduler()->scheduleUpdateForTarget(this, 0, false);
     } else {
-        this->finished();
+        this->finished(command->m_willTransition);
     }
 }
 
 void CommandExecuter::update(float) {
     if (this->m_command->m_finished) {
         CCDirector::sharedDirector()->getScheduler()->unscheduleUpdateForTarget(this);
-        this->finished();
+        this->finished(this->m_command->m_willTransition);
     }
 }

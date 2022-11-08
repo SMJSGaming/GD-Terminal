@@ -25,6 +25,7 @@ struct Command {
 
     bool m_async;
     bool m_finished;
+    bool m_willTransition;
     std::string m_name;
     std::string m_description;
     std::pair<std::string, std::string> m_globalArgs;

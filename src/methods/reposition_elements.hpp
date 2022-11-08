@@ -8,4 +8,4 @@
 
 inline bool m_silenced = false;
 
-void reposition_elements();
+void reposition_elements(bool destroyMenu = false);

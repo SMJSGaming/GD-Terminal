@@ -16,7 +16,7 @@ struct CommandExecuter : public CCObject {
 private:
     static CommandExecuter* create(Command* command, flags_t flags);
     static void handleQuotedString(FlagType type, std::string word, char& quote, std::string& flagValue);
-    static void finished();
+    static void finished(bool willTransition);
 
     Command* m_command;
 
