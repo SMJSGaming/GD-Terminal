@@ -71,7 +71,7 @@ struct TerminalCout {
 
         cout.m_appendedStream << "[" << std::endl;
 
-        for (auto& [key, val] : map) {
+        for (const auto& [key, val] : map) {
             if (first) {
                 first = false;
             } else {
