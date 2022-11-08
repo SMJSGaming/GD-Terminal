@@ -86,10 +86,21 @@ struct TerminalCout {
         return cout;
     }
 
+    friend TerminalCout& operator<<(TerminalCout& in_cout, TerminalCout& out_cout) {
+        in_cout.m_appendedStream << out_cout.m_appendedStream.str();
+
+        return in_cout;
+    }
+
     friend TerminalCout& operator>>(TerminalCout& cout, BetterTextArea*& textArea) {
         textArea->pushLine(cout.m_appendedStream.str().c_str());
 
         return cout;
+    }
+
+    void empty() {
+        this->m_appendedStream.clear();
+        this->m_appendedStream.str("");
     }
 protected:
     std::stringstream m_appendedStream;
