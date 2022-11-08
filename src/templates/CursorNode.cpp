@@ -15,10 +15,20 @@ CursorNode* gd::CursorNode::create(float width) {
 }
 
 gd::CursorNode::CursorNode(float width) {
+    this->m_disabled = false;
     this->m_delta = 0.0f;
 
     this->scheduleUpdate();
     this->setContentSize({ width, width / 2 });
+}
+
+void gd::CursorNode::toggle() {
+    this->setVisible(!(this->m_disabled = !this->m_disabled));
+}
+
+void gd::CursorNode::reset() {
+    this->m_delta = 0.0f;
+    this->setVisible(true);
 }
 
 void gd::CursorNode::draw() {
@@ -32,6 +42,8 @@ void gd::CursorNode::update(float delta) {
     if (this->m_delta >= 0.8f) {
         this->m_delta = 0.0f;
 
-        this->setVisible(!this->isVisible());
+        if (!this->m_disabled) {
+            this->setVisible(!this->isVisible());
+        }
     }
 }
